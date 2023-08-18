@@ -38,7 +38,8 @@ const config = {
 		]),
 		new ZipPlugin({
 			filename: "BlurBypasser.zip",
-			path: __dirname
+			path: __dirname,
+			exclude: /\.map$/
 		})
 	],
 	module: {
