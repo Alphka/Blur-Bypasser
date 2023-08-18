@@ -2,11 +2,10 @@
 	"compilerOptions": {
 		"target": "ES2021",
 		"module": "ESNext",
-		"checkJs": true,
-		"strict": false,
+		"moduleResolution": "Node",
+		"strict": true,
+		"sourceMap": true,
 		"noImplicitAny": false,
-		"strictNullChecks": false,
-		"strictPropertyInitialization": false,
 		"skipLibCheck": true,
 		"lib": [
 			"ESNext",
@@ -15,10 +14,8 @@
 		],
 		"noEmit": true
 	},
-	"include": [
-		"src/**/*.js"
-	],
-	"typeAcquisition": {
-		"enable": true
-	}
+	"ignore": [
+		"node_modules",
+		"build"
+	]
 }
