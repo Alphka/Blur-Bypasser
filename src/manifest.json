@@ -4,7 +4,6 @@
 	"manifest_version": 3,
 	"permissions": [
 		"tabs",
-		"activeTab",
 		"scripting",
 		"declarativeNetRequest"
 	],
@@ -13,8 +12,5 @@
 	],
 	"background": {
 		"service_worker": "background.js"
-	},
-	"action": {
-		"default_popup": "popup/index.html"
 	}
 }

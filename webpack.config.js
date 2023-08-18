@@ -1,5 +1,4 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
 const IgnoreEmitPlugin = require("ignore-emit-webpack-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
 const ZipPlugin = require("zip-webpack-plugin")
@@ -13,20 +12,13 @@ const config = {
 	devtool: "source-map",
 	entry: {
 		"contentScript": "./src/contentScript.ts",
-		"background": "./src/background.ts",
-		"popup/script": "./src/popup/script.ts",
-		"popup/style": "./src/popup/style.scss"
+		"background": "./src/background.ts"
 	},
 	output: {
 		filename: "[name].js",
 		path: join(__dirname, "build")
 	},
 	plugins: [
-		new HtmlWebpackPlugin({
-			template: "src/popup/index.html",
-			filename: "popup/index.html",
-			inject: false
-		}),
 		new CopyPlugin({
 			patterns: ["src/manifest.json"]
 		}),

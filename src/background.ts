@@ -1,8 +1,6 @@
 import type { BackgroundMessage } from "../typings"
 
 async function HasContentScript(tabId: number){
-	if(!tabId) return false
-
 	let success = false
 
 	try{
@@ -19,7 +17,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 	const url = new URL(tab.url)
 
 	if(changeInfo.status === "complete" && url.hostname === "www.passeidireto.com"){
-		if(await HasContentScript(tabId)) return
+		if(!tabId || await HasContentScript(tabId)) return
 
 		chrome.scripting.executeScript({
 			target: { tabId, allFrames: false },

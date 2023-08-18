@@ -411,8 +411,6 @@ export interface CreateElementOptions {
 	children?: Element[]
 }
 
-let a = {} as CreateElementOptions
-
 function CreateElement<T extends keyof HTMLElementTagNameMap>(tagName: T, options?: CreateElementOptions): HTMLElementTagNameMap[T]
 function CreateElement(tagName: string, options?: CreateElementOptions): HTMLElement
 function CreateElement<T extends keyof HTMLElementTagNameMap>(options?: CreateElementOptions & { tagName?: T }): HTMLElementTagNameMap[T]

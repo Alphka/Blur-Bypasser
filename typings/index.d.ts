@@ -1,5 +1,5 @@
 export interface BackgroundMessage<T = any> {
-	action: "isContentScriptInjected" | "getAnswers"
+	action: "isContentScriptInjected"
 	data?: T
 }
 

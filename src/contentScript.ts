@@ -10,7 +10,8 @@ new class ContentScript {
 	mainPromise!: Promise<typeof this.main>
 	type!: string
 	id!: string
-	isBlurObserver = false
+	isDocumentObserver = false
+	isQuestionObserver = false
 	observers = new Map<number, MutationObserver>()
 
 	constructor(){
@@ -56,19 +57,29 @@ new class ContentScript {
 						this.LoadExtension()
 						return
 					}
+
+					if((element as HTMLElement).className === "mv-file mv-content"){
+						if(this.isQuestionObserver) this.RemoveObservers()
+						if(!this.isDocumentObserver){
+							console.log("Document opened. Setting blur observer")
+							this.LoadExtension()
+						}
+
+						return
+					}
 				}
 
 				for(const element of removedNodes){
 					if((element as HTMLElement).className === "mv-file mv-content"){
 						console.log("Document closed or changed. Removing blur observer")
-						this.RemoveBlurObserver()
+						this.RemoveObservers()
 						this.LoadExtension()
 						return
 					}
 
 					if((element as HTMLElement).className === "mv-viewer-layout"){
 						console.log("Page changed. Removing blur observer")
-						this.RemoveBlurObserver()
+						this.RemoveObservers()
 						this.LoadExtension()
 						return
 					}
@@ -105,19 +116,20 @@ new class ContentScript {
 			case "pergunta": return this.SetQuestionObserver()
 		}
 	}
-	RemoveBlurObserver(){
+	RemoveObservers(){
 		for(const [id, observer] of this.observers.entries()){
 			observer.disconnect()
 			this.observers.delete(id)
 		}
 
-		this.isBlurObserver = false
+		this.isDocumentObserver = false
+		this.isQuestionObserver = false
 	}
 	async SetDocumentObserver(){
-		if(this.isBlurObserver) return
+		if(this.isDocumentObserver) return console.log("Already observing")
 		if(this.observers.size) console.warn("There were active observers")
 
-		this.isBlurObserver = true
+		this.isDocumentObserver = true
 
 		let observerId = 0
 
@@ -219,10 +231,10 @@ new class ContentScript {
 		this.observers.set(observerId++, observer)
 	}
 	async SetQuestionObserver(){
-		if(this.isBlurObserver) return
+		if(this.isQuestionObserver) return
 		if(this.observers.size) console.warn("There were active observers")
 
-		this.isBlurObserver = true
+		this.isQuestionObserver = true
 
 		const answersPromise = this.GetAnswers()
 
@@ -255,12 +267,12 @@ new class ContentScript {
 		const answersFrame = main.querySelector<HTMLDivElement>(".mv-answers-frame")!
 		const answersContainer = answersFrame.querySelector<HTMLDivElement>(".answers-list div:not(.loading-answers-frame)")
 
-		if(!answersContainer){
-			this.isBlurObserver = false
-			return console.error("Answers container not found")
-		}
-
 		try{
+			if(!answersContainer){
+				this.isQuestionObserver = false
+				throw new Error("Answers container not found")
+			}
+
 			// Wait for answers elements
 			await new Promise<void>((resolve, reject) => {
 				const id = observerId
@@ -345,17 +357,6 @@ new class ContentScript {
 
 			switch(action){
 				case "isContentScriptInjected": return sendResponse(true)
-				case "getAnswers":
-					if(this.type !== "pergunta"){
-						return sendResponse(undefined)
-					}
-
-					if(!this.answers){
-						this.GetAnswers().then(answers => this.answers = answers)
-						return sendResponse(null)
-					}
-
-					return sendResponse(this.answers)
 			}
 		})
 	}
