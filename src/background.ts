@@ -29,7 +29,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
 class BannedHosts {
 	static all = [
-		"resources.passeidireto.com/pd-cookie-banner/latest/index.js",
+		"resources.passeidireto.com/pd-cookie-banner/latest/*",
+		"resources.passeidireto.com/pd-tracking-lib/latest/*",
 		"interaction-api.passeidireto.com/materials/*/contentViews",
 		"pd-app-frontend.passeidireto.com/app/static/libs/smartbanner/*",
 		"pd-app-frontend.passeidireto.com/app/static/webPolyfill.min.js",
@@ -57,8 +58,7 @@ class BannedHosts {
 		"www.google.com/pagead/*",
 		"www.google-analytics.com/analytics.js",
 		"www.googletagservices.com/tag/js/gpt.js",
-		"www.googletagmanager.com/gtm.js",
-		"www.googletagmanager.com/ns.html",
+		"www.googletagmanager.com/*",
 		"googleads.g.doubleclick.net/pagead/*",
 		"www.google-analytics.com/plugins/ua/ecommerce.js",
 		"static.criteo.net/js/ld/ld.js",

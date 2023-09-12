@@ -265,7 +265,7 @@ new class ContentScript {
 		})
 
 		const answersFrame = main.querySelector<HTMLDivElement>(".mv-answers-frame")!
-		const answersContainer = answersFrame.querySelector<HTMLDivElement>(".answers-list div:not(.loading-answers-frame)")
+		const answersContainer = answersFrame.querySelector<HTMLDivElement>(".answers-list:nth-child(3) > div:not(.loading-answers-frame):not(.mv-question-content-limitation)")
 
 		try{
 			if(!answersContainer){
@@ -278,17 +278,22 @@ new class ContentScript {
 				const id = observerId
 				const observer = new MutationObserver(() => {
 					observerId++
+					observer.disconnect()
 					this.observers.delete(id)
 					resolve()
 				})
 
-				observer.observe(answersContainer, { childList: true })
+				observer.observe(answersContainer, {
+					childList: true,
+					subtree: true
+				})
 
 				this.observers.set(id, observer)
 
 				setTimeout(() => {
 					if(this.observers.has(id)){
 						reject(new Error("No answers found"))
+						observer.disconnect()
 						this.observers.delete(id)
 					}
 				}, 10e3)
@@ -309,6 +314,15 @@ new class ContentScript {
 					const userHeader = answerElement.querySelector<HTMLDivElement>(".user-header")!
 
 					userHeader.classList.remove("blocked")
+
+					new MutationObserver((mutations, observer) => {
+						for(const { attributeName } of mutations){
+							if(attributeName === "style"){
+								userHeader.removeAttribute("style")
+								observer.disconnect()
+							}
+						}
+					}).observe(userHeader, { attributes: true })
 
 					const answerContent = answerElement.querySelector<HTMLDivElement>(".answer-content")!
 					const answerText = answerContent.querySelector<HTMLDivElement>(".answers-text")!
